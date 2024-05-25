@@ -1,5 +1,6 @@
 import styles from "@/app/dashboard/styles.module.css";
 import { SelectRow, initDatabase, utils } from "@/db/db";
+import { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
 import * as comlink from "comlink";
 import {
   ReactNode,
@@ -12,6 +13,7 @@ import {
 type DatabaseContext = {
   exec: <T extends Record<string, unknown>>(sql: string) => Promise<T[]>;
   exportDatabase: () => Promise<unknown>;
+  db: comlink.Remote<OpfsDatabase>;
 };
 
 export const DatabaseContext = createContext({} as DatabaseContext);
@@ -28,10 +30,10 @@ export const DatabaseProvider = ({ children }: Props) => {
   });
 
   const [dbLoading, setDbLoading] = useState(true);
-  const [workerApi, setWorkerApi] = useState();
+  const [db, setDb] = useState<comlink.Remote<OpfsDatabase>>();
 
   useEffect(() => {
-    const worker = new Worker(new URL("../db/db2.ts", import.meta.url), {
+    const worker = new Worker(new URL("../db/worker.ts", import.meta.url), {
       type: "module",
     });
 
@@ -41,11 +43,9 @@ export const DatabaseProvider = ({ children }: Props) => {
 
         worker.onmessage = null;
 
-        const workerApi = comlink.wrap(worker);
+        const db = comlink.wrap<OpfsDatabase>(worker);
 
-        workerApi.selectObjects("select * from device").then(console.log);
-
-        setWorkerApi(workerApi);
+        setDb(() => db);
       }
     };
   }, []);
@@ -102,7 +102,9 @@ export const DatabaseProvider = ({ children }: Props) => {
   // };
 
   return (
-    <DatabaseContext.Provider value={{ exec, exportDatabase, workerApi }}>
+    <DatabaseContext.Provider
+      value={{ exec, exportDatabase, db: db as comlink.Remote<OpfsDatabase> }}
+    >
       <main className={styles.main}>
         {isLoading || dbLoading ? <div aria-busy="true" /> : children}
       </main>

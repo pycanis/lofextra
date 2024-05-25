@@ -3,9 +3,9 @@ import {
   useAccountContext,
   useDatabaseContext,
   useHlcContext,
-  useQueryCacheContext,
 } from "@/hooks/contexts";
 import { usePushPendingUpdates } from "@/hooks/usePushPendingUpdates";
+import { useRefetchQueries } from "@/hooks/useRefetchQueries";
 import { getUnixTimestamp } from "@/utils/dates";
 import { xchacha20poly1305 } from "@noble/ciphers/chacha";
 import { bytesToUtf8, hexToBytes } from "@noble/ciphers/utils";
@@ -26,7 +26,7 @@ type Props = {
 
 export const WebsocketProvider = ({ children }: Props) => {
   const { privKey, pubKeyHex, deviceId } = useAccountContext();
-  const { setCacheRefetchDate } = useQueryCacheContext();
+  const refetchQueries = useRefetchQueries();
   const { exec } = useDatabaseContext();
   const { hlc, setHlc } = useHlcContext();
   const pushPendingUpdates = usePushPendingUpdates();
@@ -78,7 +78,7 @@ export const WebsocketProvider = ({ children }: Props) => {
 
       ack();
 
-      setCacheRefetchDate(new Date());
+      refetchQueries();
     };
 
     socket.on("messages", onMessages);
@@ -86,7 +86,7 @@ export const WebsocketProvider = ({ children }: Props) => {
     return () => {
       socket.off("messages", onMessages);
     };
-  }, [exec, hlc, setHlc, privKey, setCacheRefetchDate, deviceId]);
+  }, [exec, hlc, setHlc, privKey, refetchQueries, deviceId]);
 
   return (
     <WebsocketContext.Provider value={{}}>{children}</WebsocketContext.Provider>

@@ -3,6 +3,7 @@ import { Input } from "@/components/Input";
 import { CopyIcon } from "@/components/icons/Copy";
 import { useAccountContext } from "@/hooks/contexts";
 import { useMutation } from "@/hooks/useMutation";
+import { QueryKeys } from "@/queries";
 import {
   generateNewAccountKeyPair,
   getAccountKeyPairFromMnemonic,
@@ -11,6 +12,7 @@ import { getUnixTimestamp } from "@/utils/dates";
 import { DatabaseMutationOperation } from "@/validators/types";
 import { entropyToMnemonic } from "@scure/bip39";
 import { wordlist as english } from "@scure/bip39/wordlists/english";
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import styles from "./styles.module.css";
@@ -20,9 +22,12 @@ type FormValues = {
 };
 
 export const Mnemonic = () => {
-  const { privKey, refetchKeyPair } = useAccountContext();
+  const { privKey } = useAccountContext();
+  const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    onSettled: refetchKeyPair,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ACCOUNT] });
+    },
     shouldSync: false,
   });
 
