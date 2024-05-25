@@ -1,5 +1,6 @@
 import styles from "@/app/dashboard/styles.module.css";
 import { SelectRow, initDatabase, utils } from "@/db/db";
+import * as comlink from "comlink";
 import {
   ReactNode,
   createContext,
@@ -25,6 +26,29 @@ export const DatabaseProvider = ({ children }: Props) => {
     promiser: (..._args: unknown[]) => new Promise(() => {}),
     exportDatabase: () => new Promise(() => {}),
   });
+
+  const [dbLoading, setDbLoading] = useState(true);
+  const [workerApi, setWorkerApi] = useState();
+
+  useEffect(() => {
+    const worker = new Worker(new URL("../db/db2.ts", import.meta.url), {
+      type: "module",
+    });
+
+    worker.onmessage = (ev) => {
+      if (ev.data.type === "dbReady") {
+        setDbLoading(false);
+
+        worker.onmessage = null;
+
+        const workerApi = comlink.wrap(worker);
+
+        workerApi.selectObjects("select * from device").then(console.log);
+
+        setWorkerApi(workerApi);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     import("@sqlite.org/sqlite-wasm").then(
@@ -78,9 +102,9 @@ export const DatabaseProvider = ({ children }: Props) => {
   // };
 
   return (
-    <DatabaseContext.Provider value={{ exec, exportDatabase }}>
+    <DatabaseContext.Provider value={{ exec, exportDatabase, workerApi }}>
       <main className={styles.main}>
-        {isLoading ? <div aria-busy="true" /> : children}
+        {isLoading || dbLoading ? <div aria-busy="true" /> : children}
       </main>
     </DatabaseContext.Provider>
   );
