@@ -1,10 +1,18 @@
 import styles from "@/app/dashboard/styles.module.css";
-import { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
+import { DB_NAME } from "@/constants";
+import { OpfsDatabase, Sqlite3Static } from "@sqlite.org/sqlite-wasm";
 import * as comlink from "comlink";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
 type DatabaseContext = {
   db: comlink.Remote<OpfsDatabase>;
+  exportDatabase: () => Promise<void>;
+  importDatabase: (byteArray: ArrayBuffer) => Promise<void>;
+};
+
+type WorkerApi = {
+  db: comlink.Remote<OpfsDatabase>;
+  sqlite3: comlink.Remote<Sqlite3Static>;
 };
 
 export const DatabaseContext = createContext({} as DatabaseContext);
@@ -15,7 +23,7 @@ type Props = {
 
 export const DatabaseProvider = ({ children }: Props) => {
   const [dbLoading, setDbLoading] = useState(true);
-  const [db, setDb] = useState<comlink.Remote<OpfsDatabase>>();
+  const [workerApi, setWorkerApi] = useState<WorkerApi>();
 
   useEffect(() => {
     const worker = new Worker(new URL("../db/worker.ts", import.meta.url), {
@@ -24,19 +32,55 @@ export const DatabaseProvider = ({ children }: Props) => {
 
     worker.onmessage = (ev) => {
       if (ev.data.type === "dbReady") {
-        setDbLoading(false);
-
         worker.onmessage = null;
 
-        const db = comlink.wrap<OpfsDatabase>(worker);
+        const workerApi = comlink.wrap(worker);
 
-        setDb(() => db);
+        setDbLoading(false);
+        setWorkerApi(() => workerApi as unknown as WorkerApi);
       }
     };
   }, []);
 
+  const exportDatabase = async () => {
+    // @ts-expect-error
+    const byteArray = await workerApi.sqlite3.capi.sqlite3_js_db_export(
+      await workerApi?.db.pointer
+    );
+
+    const blob = new Blob([byteArray.buffer], {
+      type: "application/x-sqlite3",
+    });
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = window.URL.createObjectURL(blob);
+    a.download = "lofextra.sqlite3";
+    a.addEventListener("click", function () {
+      setTimeout(function () {
+        window.URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 500);
+    });
+    a.click();
+  };
+
+  const importDatabase = async (byteArray: ArrayBuffer) => {
+    // @ts-expect-error
+    await workerApi.sqlite3.oo1.OpfsDb.importDb(DB_NAME, byteArray);
+
+    // @ts-expect-error
+    await workerApi.db.exec("delete from device");
+
+    // @ts-expect-error
+    await workerApi.db.exec(
+      // @ts-expect-error
+      `insert into device (id, createdAt) values ('${crypto.randomUUID()}', strftime('%s', 'now')*1000)`
+    );
+  };
+
   // this is a better approach for exporting the database
-  // but unfortunately not supported in some major browsers yet (mozilla)
+  // but unfortunately not supported in some major browsers yet
+  // https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#browser_compatibility
 
   // const exportDatabase = async () => {
   //   const opfsRoot = await navigator.storage.getDirectory();
@@ -60,7 +104,11 @@ export const DatabaseProvider = ({ children }: Props) => {
 
   return (
     <DatabaseContext.Provider
-      value={{ db: db as comlink.Remote<OpfsDatabase> }}
+      value={{
+        db: workerApi?.db as comlink.Remote<OpfsDatabase>,
+        exportDatabase,
+        importDatabase,
+      }}
     >
       <main className={styles.main}>
         {dbLoading ? <div aria-busy="true" /> : children}

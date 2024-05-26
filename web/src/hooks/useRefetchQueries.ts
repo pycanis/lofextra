@@ -5,13 +5,16 @@ import { useCallback, useMemo } from "react";
 export const useRefetchQueries = () => {
   const queryClient = useQueryClient();
 
-  const refetch = useCallback(() => {
-    for (const queryKey of Object.keys(queries)) {
-      if (queries[queryKey as QueryKeys].refetchOnUpdate) {
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
+  const refetch = useCallback(
+    (forceAll = false) => {
+      for (const queryKey of Object.keys(queries)) {
+        if (queries[queryKey as QueryKeys].refetchOnUpdate || forceAll) {
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        }
       }
-    }
-  }, [queryClient]);
+    },
+    [queryClient]
+  );
 
   return useMemo(() => refetch, [refetch]);
 };
