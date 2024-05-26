@@ -3,7 +3,7 @@ import { Form } from "@/components/Form";
 import { Input } from "@/components/Input";
 import { Modal } from "@/components/Modal";
 import { useAccountContext } from "@/hooks/contexts";
-import { useMutation } from "@/hooks/useMutation";
+import { useLofiMutation } from "@/hooks/useLofiMutation";
 import { useRefetchQueries } from "@/hooks/useRefetchQueries";
 import {
   appendSecondsAndMilis,
@@ -44,8 +44,9 @@ const mexp = new Mexp();
 export const TransactionFormModal = ({ transaction, onClose }: Props) => {
   const { pubKeyHex } = useAccountContext();
   const refetchQueries = useRefetchQueries();
-  const { mutate } = useMutation({
-    onSettled: () => {
+  const { mutate } = useLofiMutation({
+    shouldSync: true,
+    onSuccess: () => {
       refetchQueries();
 
       onClose();

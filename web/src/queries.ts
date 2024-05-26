@@ -8,26 +8,26 @@ export enum QueryKeys {
   GET_TRANSACTIONS_TOTAL = "GET_TRANSACTIONS_TOTAL",
 }
 
-export const queries: Record<QueryKeys, { refetchOnRemoteUpdate: boolean }> = {
+export const queries: Record<QueryKeys, { refetchOnUpdate: boolean }> = {
   [QueryKeys.GET_ACCOUNT]: {
-    refetchOnRemoteUpdate: false,
+    refetchOnUpdate: false,
   },
   [QueryKeys.GET_DEVICE]: {
-    refetchOnRemoteUpdate: false,
+    refetchOnUpdate: false,
   },
   [QueryKeys.GET_CATEGORIES]: {
-    refetchOnRemoteUpdate: true,
+    refetchOnUpdate: true,
   },
   [QueryKeys.GET_STATISTICS_TRANSACTIONS_IN_CATEGORY]: {
-    refetchOnRemoteUpdate: true,
+    refetchOnUpdate: true,
   },
   [QueryKeys.GET_STATISTICS]: {
-    refetchOnRemoteUpdate: true,
+    refetchOnUpdate: true,
   },
   [QueryKeys.GET_TRANSACTIONS]: {
-    refetchOnRemoteUpdate: true,
+    refetchOnUpdate: true,
   },
   [QueryKeys.GET_TRANSACTIONS_TOTAL]: {
-    refetchOnRemoteUpdate: true,
+    refetchOnUpdate: true,
   },
 };

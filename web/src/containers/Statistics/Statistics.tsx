@@ -68,9 +68,7 @@ export const Statistics = () => {
         categoryId: z.string(),
       })
     ),
-    options: {
-      queryKey: [QueryKeys.GET_STATISTICS, pubKeyHex, intervalCondition],
-    },
+    queryKey: [QueryKeys.GET_STATISTICS, pubKeyHex, intervalCondition],
   });
 
   const totalInPeriod = useMemo(

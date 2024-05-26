@@ -37,14 +37,12 @@ export const StatisticsDetailModal = ({
   const { data } = useLofiQuery({
     sql: `select * from transactions t where pubKeyHex = '${pubKeyHex}' and ${categoryCondition} and deletedAt is null and ${intervalCondition} order by createdAt desc`,
     schema: transactionsSchema,
-    options: {
-      queryKey: [
-        QueryKeys.GET_STATISTICS_TRANSACTIONS_IN_CATEGORY,
-        pubKeyHex,
-        categoryCondition,
-        intervalCondition,
-      ],
-    },
+    queryKey: [
+      QueryKeys.GET_STATISTICS_TRANSACTIONS_IN_CATEGORY,
+      pubKeyHex,
+      categoryCondition,
+      intervalCondition,
+    ],
   });
 
   return (

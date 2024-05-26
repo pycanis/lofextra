@@ -2,7 +2,7 @@ import { Form } from "@/components/Form";
 import { Input } from "@/components/Input";
 import { CopyIcon } from "@/components/icons/Copy";
 import { useAccountContext } from "@/hooks/contexts";
-import { useMutation } from "@/hooks/useMutation";
+import { useLofiMutation } from "@/hooks/useLofiMutation";
 import { QueryKeys } from "@/queries";
 import {
   generateNewAccountKeyPair,
@@ -24,11 +24,12 @@ type FormValues = {
 export const Mnemonic = () => {
   const { privKey } = useAccountContext();
   const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    onSettled: () => {
+
+  const { mutate } = useLofiMutation({
+    shouldSync: false,
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ACCOUNT] });
     },
-    shouldSync: false,
   });
 
   const currentMnemonic = useMemo(

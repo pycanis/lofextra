@@ -18,7 +18,7 @@ export const Transaction = ({ transaction, onDetailClick }: Props) => {
   const { data } = useLofiQuery({
     sql: `select * from categories where pubKeyHex = '${pubKeyHex}' and deletedAt is null`,
     schema: categoriesSchema,
-    options: { queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex] },
+    queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex],
   });
 
   const category = useMemo(

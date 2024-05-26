@@ -7,7 +7,7 @@ export const useRefetchQueries = () => {
 
   const refetch = useCallback(() => {
     for (const queryKey of Object.keys(queries)) {
-      if (queries[queryKey as QueryKeys].refetchOnRemoteUpdate) {
+      if (queries[queryKey as QueryKeys].refetchOnUpdate) {
         queryClient.invalidateQueries({ queryKey: [queryKey] });
       }
     }

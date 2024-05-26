@@ -1,6 +1,11 @@
 import * as comlink from "comlink";
 
 import sqlite3InitModule from "@sqlite.org/sqlite-wasm";
+import { createTables } from "./create";
+import { migrate } from "./migrations";
+import { seed } from "./seeds";
+
+const DB_NAME = "mydb.sqlite3";
 
 const initSqlite = async () => {
   try {
@@ -10,7 +15,11 @@ const initSqlite = async () => {
       throw new Error("OPFS not suppored");
     }
 
-    const db = new sqlite3.oo1.OpfsDb("mydb.sqlite3", "ct");
+    const db = new sqlite3.oo1.OpfsDb(DB_NAME, "ct");
+
+    createTables(db);
+    seed(db);
+    migrate(db);
 
     comlink.expose(db);
 

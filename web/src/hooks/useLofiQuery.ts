@@ -4,21 +4,18 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { ZodSchema, optional } from "zod";
+import { TypeOf, ZodSchema, optional } from "zod";
 import { useDatabaseContext } from "./contexts";
 
-type Params<T extends ZodSchema> = {
-  sql: string;
-  schema: T;
-  options: Omit<
-    UndefinedInitialDataOptions<unknown, Error, unknown, QueryKey>,
-    "queryFn"
-  >;
-};
+type Params<T extends ZodSchema> = Omit<
+  UndefinedInitialDataOptions<TypeOf<T>, Error, TypeOf<T>, QueryKey>,
+  "queryFn"
+> & { sql: string; schema: T };
+
 export const useLofiQuery = <T extends ZodSchema>({
   sql,
   schema,
-  options,
+  ...options
 }: Params<T>) => {
   const { db } = useDatabaseContext();
   const query = useQuery({ ...options, queryFn: () => db.selectObjects(sql) });

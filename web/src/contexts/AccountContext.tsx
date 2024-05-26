@@ -20,13 +20,13 @@ export const AccountProvider = ({ children }: Props) => {
   const { data: accountsData } = useLofiQuery({
     sql: "select * from accounts order by id desc limit 1",
     schema: accountsSchema,
-    options: { queryKey: [QueryKeys.GET_ACCOUNT] },
+    queryKey: [QueryKeys.GET_ACCOUNT],
   });
 
   const { data: deviceData } = useLofiQuery({
     sql: "select * from device",
     schema: devicesSchema,
-    options: { queryKey: [QueryKeys.GET_DEVICE] },
+    queryKey: [QueryKeys.GET_DEVICE],
   });
 
   const keyPair = useMemo(

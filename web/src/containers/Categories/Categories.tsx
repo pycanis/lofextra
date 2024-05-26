@@ -16,7 +16,7 @@ export const Categories = () => {
   const { data, refetch } = useLofiQuery({
     sql: `select * from categories where pubKeyHex = '${pubKeyHex}' and deletedAt is null`,
     schema: categoriesSchema,
-    options: { queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex] },
+    queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex],
   });
 
   return (

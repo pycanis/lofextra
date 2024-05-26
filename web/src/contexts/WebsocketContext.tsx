@@ -1,4 +1,4 @@
-import { handleRemoteDatabaseMutation } from "@/db/db";
+import { handleRemoteDatabaseMutation } from "@/db/utils";
 import {
   useAccountContext,
   useDatabaseContext,
@@ -27,7 +27,7 @@ type Props = {
 export const WebsocketProvider = ({ children }: Props) => {
   const { privKey, pubKeyHex, deviceId } = useAccountContext();
   const refetchQueries = useRefetchQueries();
-  const { exec } = useDatabaseContext();
+  const { db } = useDatabaseContext();
   const { hlc, setHlc } = useHlcContext();
   const pushPendingUpdates = usePushPendingUpdates();
 
@@ -45,7 +45,7 @@ export const WebsocketProvider = ({ children }: Props) => {
     return () => {
       socket.off("connect", pushPendingUpdates);
     };
-  }, [pubKeyHex, exec, deviceId, pushPendingUpdates]);
+  }, [pubKeyHex, db, deviceId, pushPendingUpdates]);
 
   useEffect(() => {
     const onMessages = async (messages: unknown, ack: () => void) => {
@@ -68,7 +68,7 @@ export const WebsocketProvider = ({ children }: Props) => {
         const validatedData = generateDatabaseMutationSchema.parse(data);
 
         await handleRemoteDatabaseMutation({
-          exec,
+          db,
           hlc: messageHlc,
           mutation: validatedData,
         });
@@ -86,7 +86,7 @@ export const WebsocketProvider = ({ children }: Props) => {
     return () => {
       socket.off("messages", onMessages);
     };
-  }, [exec, hlc, setHlc, privKey, refetchQueries, deviceId]);
+  }, [db, hlc, setHlc, privKey, refetchQueries, deviceId]);
 
   return (
     <WebsocketContext.Provider value={{}}>{children}</WebsocketContext.Provider>

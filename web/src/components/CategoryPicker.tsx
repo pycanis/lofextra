@@ -16,7 +16,7 @@ export const CategoryPicker = ({ name, ...props }: Props) => {
   const { data } = useLofiQuery({
     sql: `select * from categories where pubKeyHex = '${pubKeyHex}' and deletedAt is null`,
     schema: categoriesSchema,
-    options: { queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex] },
+    queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex],
   });
 
   const { register } = useFormContext();
