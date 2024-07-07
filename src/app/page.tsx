@@ -1,13 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./styles.module.css";
+import { Translation } from "./translations/Translation";
+import { LocationSwitcher } from "./translations/LocationSwitcher";
 
 export default function Page() {
   return (
     <main className={styles.main}>
       <h1>lofextra (beta)</h1>
-      <h3>local-first expense tracker</h3>
+      <LocationSwitcher />
+      <h3>
+        <Translation id="LOCAL_FIRST_EXPENSE_TRACKER" />
+      </h3>
       <Link href="/dashboard">
-        <button>to app</button>
+        <button>
+          <Translation id="TO_APP" />
+        </button>
       </Link>
       <ul>
         <li>retain full ownership of your data securely and privately</li>

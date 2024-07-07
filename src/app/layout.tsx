@@ -3,6 +3,9 @@ import Link from "next/link";
 import Script from "next/script";
 import "./pico.pumpkin.min.css";
 import styles from "./styles.module.css";
+import { IntlProvider } from "react-intl";
+import { messagesCz } from "./translations/es";
+import { App } from "./App";
 
 const APP_NAME = "lofextra";
 const APP_DESCRIPTION = "local-first expense tracker";
@@ -51,22 +54,24 @@ export default function RootLayout({
       />
 
       <body className={styles.body}>
-        {children}
-        <footer className={styles.footer}>
-          <Link href="/dashboard">app</Link>
+        <App>
+          {children}
+          <footer className={styles.footer}>
+            <Link href="/dashboard">app</Link>
 
-          <Link href="/faq">faq</Link>
+            <Link href="/faq">faq</Link>
 
-          <a
-            href="https://github.com/pycan-jouza/lofextra"
-            target="_blank"
-            referrerPolicy="no-referrer"
-          >
-            source code
-          </a>
+            <a
+              href="https://github.com/pycan-jouza/lofextra"
+              target="_blank"
+              referrerPolicy="no-referrer"
+            >
+              source code
+            </a>
 
-          <Link href="/donate">donate</Link>
-        </footer>
+            <Link href="/donate">donate</Link>
+          </footer>
+        </App>
       </body>
     </html>
   );
