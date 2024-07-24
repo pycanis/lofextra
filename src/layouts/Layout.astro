@@ -1,0 +1,84 @@
+---
+import { SEO } from "astro-seo";
+import { ViewTransitions } from "astro:transitions";
+import "../pico.pumpkin.min.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+
+const name = "lofextra";
+const description = "local-first expense tracker";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <SEO
+      title={title}
+      description={description}
+      openGraph={{
+        basic: {
+          title: `${name} - ${description}`,
+          type: "website",
+          image: "",
+        },
+      }}
+      twitter={{
+        title,
+        description,
+        card: "summary",
+        site: title,
+      }}
+      extend={{
+        link: [{ rel: "icon", href: "/favicon.ico" }],
+      }}
+    />
+
+    <link
+      rel="preload"
+      href="https://plausible.lofextra.com/js/script.js"
+      as="script"
+    />
+
+    <ViewTransitions />
+  </head>
+
+  <body>
+    <slot />
+
+    <footer>
+      <a href="/dashboard">app</a>
+
+      <a href="/faq">faq</a>
+
+      <a
+        href="https://github.com/pycan-jouza/lofextra"
+        target="_blank"
+        referrerpolicy="no-referrer"
+      >
+        source code
+      </a>
+
+      <a href="/donate">donate</a>
+    </footer>
+    <style>
+      body {
+        padding: 0 1rem;
+        margin: 0 auto;
+        max-width: 800px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      footer {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+    </style>
+  </body>
+</html>

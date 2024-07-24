@@ -1,0 +1,8 @@
+---
+import { Categories } from "../../../containers/Dashboard/Categories/Categories";
+import DashboardLayout from "../../../layouts/DashboardLayout.astro";
+---
+
+<DashboardLayout title="lofextra - categories">
+  <Categories client:only="react" />
+</DashboardLayout>

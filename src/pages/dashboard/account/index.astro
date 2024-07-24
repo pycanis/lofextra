@@ -1,0 +1,8 @@
+---
+import { Account } from "../../../containers/Dashboard/Account/Account";
+import DashboardLayout from "../../../layouts/DashboardLayout.astro";
+---
+
+<DashboardLayout title="lofextra - account">
+  <Account client:only="react" />
+</DashboardLayout>
