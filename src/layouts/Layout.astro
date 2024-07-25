@@ -1,5 +1,4 @@
 ---
-import { SEO } from "astro-seo";
 import { ViewTransitions } from "astro:transitions";
 import "../pico.pumpkin.min.css";
 
@@ -16,26 +15,28 @@ const description = "local-first expense tracker";
 <!doctype html>
 <html lang="en">
   <head>
-    <SEO
-      title={title}
-      description={description}
-      openGraph={{
-        basic: {
-          title: `${name} - ${description}`,
-          type: "website",
-          image: "",
-        },
-      }}
-      twitter={{
-        title,
-        description,
-        card: "summary",
-        site: title,
-      }}
-      extend={{
-        link: [{ rel: "icon", href: "/favicon.ico" }],
-      }}
-    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="application-name" content={name} />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content={name} />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={name} />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={name} />
+    <meta name="twitter:description" content={description} />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="75x75" />
 
     <link
       rel="preload"

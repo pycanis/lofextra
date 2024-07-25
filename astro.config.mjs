@@ -1,10 +1,11 @@
 import react from "@astrojs/react";
 import AstroPWA from "@vite-pwa/astro";
 import { defineConfig } from "astro/config";
+import manifest from "./manifest.json";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), AstroPWA()],
+  integrations: [react(), AstroPWA({ manifest })],
   prefetch: true,
   vite: {
     // this is needed because there's issue in vite regarding importing worker files
