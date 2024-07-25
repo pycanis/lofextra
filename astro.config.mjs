@@ -1,4 +1,3 @@
-import node from "@astrojs/node";
 import react from "@astrojs/react";
 import AstroPWA from "@vite-pwa/astro";
 import { defineConfig } from "astro/config";
@@ -7,10 +6,6 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   integrations: [react(), AstroPWA()],
   prefetch: true,
-  output: "hybrid",
-  adapter: node({
-    mode: "standalone",
-  }),
   vite: {
     // this is needed because there's issue in vite regarding importing worker files
     // https://github.com/vitejs/vite/issues/8427

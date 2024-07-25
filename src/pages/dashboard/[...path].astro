@@ -2,7 +2,9 @@
 import { App } from "../../containers/Dashboard/App";
 import Layout from "../../layouts/Layout.astro";
 
-export const prerender = false;
+export async function getStaticPaths() {
+  return [{ params: { path: undefined } }];
+}
 ---
 
 <Layout title="lofextra - dashboard">
