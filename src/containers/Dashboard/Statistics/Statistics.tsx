@@ -2,7 +2,6 @@ import { useLofikAccount, useLofikQuery } from "@lofik/react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { LofikProviderWrapper } from "../../../layouts/LofikProviderWrapper";
 import { QueryKeys } from "../../../queries";
 import {
   getEndOfDay,
@@ -29,7 +28,7 @@ const currentDay = currentDate.getDate();
 const currentDayFormatted = currentDay > 9 ? currentDay : `0${currentDay}`;
 const currentDateFormatted = `${currentYear}-${currentMonthFormatted}-${currentDayFormatted}`;
 
-export const Statistics1 = () => {
+export const Statistics = () => {
   const { pubKeyHex } = useLofikAccount();
   const [statsInterval, setStatsInterval] = useState(DAYS_AGO_30_TS);
   const [monthInterval, setMonthInterval] = useState(
@@ -219,13 +218,5 @@ export const Statistics1 = () => {
         />
       )}
     </>
-  );
-};
-
-export const Statistics = () => {
-  return (
-    <LofikProviderWrapper>
-      <Statistics1 />
-    </LofikProviderWrapper>
   );
 };

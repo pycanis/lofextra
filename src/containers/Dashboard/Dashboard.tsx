@@ -1,7 +1,6 @@
 import { useLofikAccount, useLofikQuery } from "@lofik/react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
-import { LofikProviderWrapper } from "../../layouts/LofikProviderWrapper";
 import { QueryKeys } from "../../queries";
 import { getTimestampAfterSubtractingDays } from "../../utils/dates";
 import { transactionsSchema } from "../../validators/validators";
@@ -14,7 +13,7 @@ import { Transactions } from "./Transactions/Transactions";
 
 const DAYS_AGO_30_TS = getTimestampAfterSubtractingDays(30);
 
-export const Dashboard1 = () => {
+export const Dashboard = () => {
   const { pubKeyHex } = useLofikAccount();
 
   const [modalTransaction, setModalTransaction] =
@@ -64,13 +63,5 @@ export const Dashboard1 = () => {
         />
       )}
     </>
-  );
-};
-
-export const Dashboard = () => {
-  return (
-    <LofikProviderWrapper>
-      <Dashboard1 />
-    </LofikProviderWrapper>
   );
 };

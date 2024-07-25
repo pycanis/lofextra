@@ -1,13 +1,12 @@
 import { useLofikAccount, useLofikQuery } from "@lofik/react";
 import { useState } from "react";
-import { LofikProviderWrapper } from "../../../layouts/LofikProviderWrapper";
 import { QueryKeys } from "../../../queries";
 import { categoriesSchema } from "../../../validators/validators";
 import { Category } from "./Category";
 import { CategoryFormModal, type ModalCategory } from "./CategoryFormModal";
 import styles from "./styles.module.css";
 
-export const Categories1 = () => {
+export const Categories = () => {
   const { pubKeyHex } = useLofikAccount();
 
   const [modalCategory, setModalCategory] = useState<ModalCategory | null>(
@@ -64,13 +63,5 @@ export const Categories1 = () => {
         />
       )}
     </>
-  );
-};
-
-export const Categories = () => {
-  return (
-    <LofikProviderWrapper>
-      <Categories1 />
-    </LofikProviderWrapper>
   );
 };

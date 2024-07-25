@@ -1,0 +1,10 @@
+---
+import { App } from "../../containers/Dashboard/App";
+import Layout from "../../layouts/Layout.astro";
+
+export const prerender = false;
+---
+
+<Layout title="lofextra - dashboard">
+  <App client:only="react" />
+</Layout>
