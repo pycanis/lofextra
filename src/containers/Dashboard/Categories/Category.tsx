@@ -1,3 +1,5 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { DatabaseMutationOperation, useLofikMutation } from "@lofik/react";
 import { useState } from "react";
 import { ConfirmModal } from "../../../components/ConfirmModal";
@@ -12,6 +14,21 @@ type Props = {
 
 export const Category = ({ category, onDetailClick, onDelete }: Props) => {
   const [confirm, setOpenConfirm] = useState(false);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id, attributes: { role: "" } });
+
+  const sortableStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const { mutate } = useLofikMutation({
     shouldSync: true,
@@ -33,8 +50,23 @@ export const Category = ({ category, onDetailClick, onDelete }: Props) => {
       <div
         className={styles["category-row"]}
         onClick={() => onDetailClick(category)}
+        ref={setNodeRef}
+        style={sortableStyle}
+        {...attributes}
       >
-        <strong>{category.title}</strong>
+        <div>
+          <span
+            ref={setActivatorNodeRef}
+            className={styles.dnd}
+            style={{ cursor: isDragging ? "grabbing" : "grab" }}
+            {...listeners}
+          >
+            ⋮⋮
+          </span>
+
+          <strong>{category.title}</strong>
+        </div>
+
         <div
           onClick={(e) => {
             e.stopPropagation(); // Prevent whole row-click event
