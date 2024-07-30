@@ -15,7 +15,7 @@ import styles from "./styles.module.css";
 export type ModalCategory = Omit<
   CategoryType,
   "id" | "pubKeyHex" | "updatedAt" | "deletedAt" | "createdAt" | "sortOrder"
-> & { id: string | null; createdAt?: number };
+> & { id: string | null; sortOrder?: number; createdAt?: number };
 
 type Props = {
   category: ModalCategory;
@@ -53,7 +53,8 @@ export const CategoryFormModal = ({ category, onSuccess, onClose }: Props) => {
         id: category.id || crypto.randomUUID(),
         title,
         pubKeyHex,
-        sortOrder: categoriesSortOrder[0].maxSortOrder + 1,
+        sortOrder:
+          category.sortOrder || categoriesSortOrder[0].maxSortOrder + 1,
         deletedAt: null,
         createdAt: category.createdAt || Date.now(),
       },

@@ -1,26 +1,18 @@
 import {
-  closestCorners,
-  DndContext,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+  DragDropContext,
+  Droppable,
+  type OnDragEndResponder,
+} from "@hello-pangea/dnd";
 import {
   DatabaseMutationOperation,
   useLofikAccount,
   useLofikMutation,
   useLofikQuery,
-  useLofikQueryClient,
 } from "@lofik/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { TypeOf } from "zod";
 import { QueryKeys } from "../../../queries";
+import { arrayMove } from "../../../utils/array";
 import { categoriesSchema } from "../../../validators/validators";
 import { Category } from "./Category";
 import { CategoryFormModal, type ModalCategory } from "./CategoryFormModal";
@@ -28,9 +20,11 @@ import styles from "./styles.module.css";
 
 export const Categories = () => {
   const { pubKeyHex } = useLofikAccount();
-  const queryClient = useLofikQueryClient();
 
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
+  // using the state here as a 'hack' to prevent flickering issue when dropping caused by react-query
+  // https://codesandbox.io/s/react-beautiful-dnd-flicker-after-synchronous-update-with-reactquery-n207n1
+  const [categoriesState, setCategoriesState] =
+    useState<TypeOf<typeof categoriesSchema>>();
 
   const [modalCategory, setModalCategory] = useState<ModalCategory | null>(
     null
@@ -47,6 +41,10 @@ export const Categories = () => {
     queryKey: [QueryKeys.GET_CATEGORIES, pubKeyHex],
   });
 
+  useEffect(() => {
+    setCategoriesState(categories);
+  }, [categories]);
+
   const { mutate } = useLofikMutation({
     shouldSync: true,
     onSettled: () => {
@@ -54,29 +52,29 @@ export const Categories = () => {
     },
   });
 
-  const onDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const onDragEnd: OnDragEndResponder = (result) => {
+    const { draggableId, source, destination } = result;
 
-    if (active.id === over?.id || !categories) {
+    if (
+      !destination?.index ||
+      source.index === destination.index ||
+      !categoriesState
+    ) {
       return;
     }
 
-    const oldIndex = categories.findIndex((c) => c.id === active.id);
-    const newIndex = categories.findIndex((c) => c.id === over?.id);
-
-    const oldSortOrder = categories[oldIndex].sortOrder;
-    const newSortOrder = categories[newIndex].sortOrder;
+    const oldSortOrder = categoriesState[source.index].sortOrder;
+    const newSortOrder = categoriesState[destination?.index].sortOrder;
 
     // optimistic update
-    queryClient.setQueryData(
-      [QueryKeys.GET_CATEGORIES, pubKeyHex],
-      arrayMove(categories, oldIndex, newIndex)
+    setCategoriesState(
+      arrayMove(categoriesState, source.index, destination.index)
     );
 
     mutate({
       operation: DatabaseMutationOperation.Sort,
       tableName: "categories",
-      identifierValue: active.id.toString(),
+      identifierValue: draggableId,
       order: oldSortOrder > newSortOrder ? newSortOrder : newSortOrder + 1,
     });
   };
@@ -87,7 +85,7 @@ export const Categories = () => {
         <div>
           <div>categories total</div>
           <div className={styles.large}>
-            <strong>{categories?.length ?? 0}</strong>
+            <strong>{categoriesState?.length ?? 0}</strong>
           </div>
         </div>
 
@@ -103,37 +101,39 @@ export const Categories = () => {
         </button>
       </div>
 
-      {!!categories?.length && (
+      {!!categoriesState?.length && (
         <span className={styles.small}>
-          sort categories by dragging a symbol on the left
+          sort categories by drag and dropping
         </span>
       )}
 
-      <div className={styles.scroll}>
-        {categories?.length ? (
-          <DndContext
-            sensors={sensors}
-            onDragEnd={onDragEnd}
-            collisionDetection={closestCorners}
-          >
-            <SortableContext
-              items={categories}
-              strategy={verticalListSortingStrategy}
-            >
-              {categories.map((category) => (
-                <Category
-                  key={category.id}
-                  category={category}
-                  onDetailClick={(category) => setModalCategory(category)}
-                  onDelete={refetch}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        ) : (
-          <div>no categories yet..</div>
-        )}
-      </div>
+      {categoriesState?.length ? (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="droppable">
+            {(provided) => (
+              <div
+                className={styles.scroll}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {categoriesState.map((category, index) => (
+                  <Category
+                    key={category.id}
+                    index={index}
+                    category={category}
+                    onDetailClick={(category) => setModalCategory(category)}
+                    onDelete={refetch}
+                  />
+                ))}
+
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      ) : (
+        <div>no categories yet..</div>
+      )}
 
       {modalCategory && (
         <CategoryFormModal

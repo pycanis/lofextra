@@ -1,5 +1,4 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Draggable } from "@hello-pangea/dnd";
 import { DatabaseMutationOperation, useLofikMutation } from "@lofik/react";
 import { useState } from "react";
 import { ConfirmModal } from "../../../components/ConfirmModal";
@@ -8,27 +7,18 @@ import styles from "./styles.module.css";
 
 type Props = {
   category: CategoryType;
+  index: number;
   onDetailClick: (category: CategoryType) => void;
   onDelete: () => void;
 };
 
-export const Category = ({ category, onDetailClick, onDelete }: Props) => {
+export const Category = ({
+  category,
+  index,
+  onDetailClick,
+  onDelete,
+}: Props) => {
   const [confirm, setOpenConfirm] = useState(false);
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: category.id, attributes: { role: "" } });
-
-  const sortableStyle = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   const { mutate } = useLofikMutation({
     shouldSync: true,
@@ -47,35 +37,32 @@ export const Category = ({ category, onDetailClick, onDelete }: Props) => {
 
   return (
     <>
-      <div
-        className={styles["category-row"]}
-        onClick={() => onDetailClick(category)}
-        ref={setNodeRef}
-        style={sortableStyle}
-        {...attributes}
-      >
-        <div>
-          <span
-            ref={setActivatorNodeRef}
-            className={styles.dnd}
-            style={{ cursor: isDragging ? "grabbing" : "grab" }}
-            {...listeners}
+      <Draggable draggableId={category.id} index={index}>
+        {(provided) => (
+          <div
+            onClick={() => onDetailClick(category)}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...{ ...provided.dragHandleProps, role: "row" }}
+            className={styles["category-row"]}
           >
-            ⋮⋮
-          </span>
+            <div>
+              <span className={styles.dnd}>⋮⋮</span>
 
-          <strong>{category.title}</strong>
-        </div>
+              <strong>{category.title}</strong>
+            </div>
 
-        <div
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent whole row-click event
-            setOpenConfirm(true);
-          }}
-        >
-          🗑️
-        </div>
-      </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent whole row-click event
+                setOpenConfirm(true);
+              }}
+            >
+              🗑️
+            </div>
+          </div>
+        )}
+      </Draggable>
 
       {confirm && (
         <ConfirmModal
