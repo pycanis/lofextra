@@ -1,5 +1,4 @@
 import { useRouter } from "@tanstack/react-router";
-import { getUnixTimestamp } from "../../../utils/dates";
 import { RecurringTransactionRepeatInterval } from "../../../validators/types";
 import { routes } from "../routes";
 import { RecurringTransactionForm } from "./RecurringTransactionForm";
@@ -23,8 +22,7 @@ export const RecurringTransactionCreate = () => {
           categoryId: "",
           repeatDay: 1,
           repeatInterval: RecurringTransactionRepeatInterval.MONTH,
-          startsAt: getUnixTimestamp(),
-          createdAt: getUnixTimestamp(),
+          createdAt: null,
         }}
         onSuccess={navigateToRecurringTransactions}
         onCancel={goBack}

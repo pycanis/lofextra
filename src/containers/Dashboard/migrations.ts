@@ -70,7 +70,7 @@ const RecurringTransactionsMigration = async (sqlocal: SQLocal) => {
 
   await sqlocal.transaction(async (tx) => {
     await tx.sql(
-      "CREATE TABLE recurringTransactions (id VARCHAR(40) PRIMARY KEY, title TEXT NOT NULL, amount REAL NOT NULL, currency TEXT DEFAULT 'USD', categoryId VARCHAR(40), startsAt INTEGER NOT NULL, repeatDay INTEGER NOT NULL, repeatInterval TEXT NOT NULL CHECK(repeatInterval IN ('month')), pubKeyHex TEXT NOT NULL, deletedAt INTEGER, updatedAt INTEGER NOT NULL, createdAt INTEGER NOT NULL, FOREIGN KEY (categoryId) REFERENCES categories(id))"
+      "CREATE TABLE recurringTransactions (id VARCHAR(40) PRIMARY KEY, title TEXT NOT NULL, amount REAL NOT NULL, currency TEXT DEFAULT 'USD', categoryId VARCHAR(40), repeatDay INTEGER NOT NULL, repeatInterval TEXT NOT NULL CHECK(repeatInterval IN ('month')), pubKeyHex TEXT NOT NULL, deletedAt INTEGER, updatedAt INTEGER NOT NULL, createdAt INTEGER NOT NULL, FOREIGN KEY (categoryId) REFERENCES categories(id))"
     );
 
     await tx.sql(

@@ -1,7 +1,6 @@
 import { useLofikAccount, useLofikQuery } from "@lofik/react";
 import { useMemo } from "react";
 import { QueryKeys } from "../../../queries";
-import { getDateFromTimestamp } from "../../../utils/dates";
 import { formatNumber } from "../../../utils/formatters";
 import { type RecurringTransaction } from "../../../validators/types";
 import { categoriesSchema } from "../../../validators/validators";
@@ -58,10 +57,7 @@ export const RecurringTransactionRow = ({
         </p>
 
         <p className={`${styles["margin-bottom"]} ${styles.small}`}>
-          on day {recurringTransaction.repeatDay} of every month starting{" "}
-          {getDateFromTimestamp(
-            recurringTransaction.startsAt
-          ).toLocaleDateString()}
+          on day {recurringTransaction.repeatDay} of every month
         </p>
       </div>
     </div>

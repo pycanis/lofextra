@@ -8,12 +8,7 @@ const countCurrentIndex = (
 ): number | undefined => {
   const now = getUnixTimestamp();
 
-  if (recurringTransaction.startsAt > now) {
-    // recurring transaction starts in the future
-    return;
-  }
-
-  const startsAt = new Date(recurringTransaction.startsAt);
+  const startsAt = new Date(recurringTransaction.createdAt);
 
   let iterationTimestamp =
     startsAt.getDate() <= recurringTransaction.repeatDay
@@ -44,13 +39,13 @@ export const handleRecurringTransactions = async (
   { pubKeyHex }: { pubKeyHex: string; deviceId: string }
 ) => {
   let shouldRefetch = false;
-  // todo: consider removing startsAt completely
+
   const recurringTransactions: RecurringTransaction[] = await sqlocal.sql(
     `SELECT * FROM recurringTransactions WHERE pubKeyHex = '${pubKeyHex}' AND deletedAt IS NULL`
   );
 
   for (const recurringTransaction of recurringTransactions) {
-    const { id, title, amount, startsAt, categoryId } = recurringTransaction;
+    const { id, title, amount, categoryId, createdAt } = recurringTransaction;
 
     const transactions: Transaction[] = await sqlocal.sql(
       `SELECT * FROM transactions WHERE recurringTransactionId = '${id}' ORDER BY recurringTransactionIndex`
@@ -65,17 +60,17 @@ export const handleRecurringTransactions = async (
       continue;
     }
 
+    const startsAt = new Date(createdAt);
+
     let adjustedMaxIndex = maxIndex ?? 1;
 
     while (adjustedMaxIndex <= currentIndex) {
       const createdAt = new Date(
         new Date(startsAt).setDate(recurringTransaction.repeatDay)
       ).setMonth(
-        new Date(startsAt).getMonth() +
+        startsAt.getMonth() +
           adjustedMaxIndex +
-          (new Date(startsAt).getDate() <= recurringTransaction.repeatDay
-            ? -1
-            : 0)
+          (startsAt.getDate() <= recurringTransaction.repeatDay ? -1 : 0)
       );
 
       await sqlocal.sql(

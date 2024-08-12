@@ -10,11 +10,7 @@ import { CategoryPicker } from "../../../components/CategoryPicker";
 import { Form } from "../../../components/Form";
 import { Input } from "../../../components/Input";
 import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
-import {
-  formatDateForInput,
-  getDateFromTimestamp,
-  getUnixTimestamp,
-} from "../../../utils/dates";
+import { getUnixTimestamp } from "../../../utils/dates";
 import {
   RecurringTransactionRepeatInterval,
   type RecurringTransaction,
@@ -23,8 +19,14 @@ import styles from "./styles.module.css";
 
 export type FormRecurringTransaction = Omit<
   RecurringTransaction,
-  "id" | "amount" | "pubKeyHex" | "currency" | "updatedAt" | "deletedAt"
-> & { id: string | null; amount: number | null };
+  | "id"
+  | "amount"
+  | "pubKeyHex"
+  | "currency"
+  | "updatedAt"
+  | "deletedAt"
+  | "createdAt"
+> & { id: string | null; amount: number | null; createdAt: number | null };
 
 type Props = {
   recurringTransaction: FormRecurringTransaction;
@@ -36,7 +38,6 @@ const schema = z.object({
   title: z.string().min(1),
   amount: z.string(),
   categoryId: z.string().nullable(),
-  startsAt: z.string(),
   repeatDay: z
     .number()
     .gte(1, "Must be 1 of greater")
@@ -71,7 +72,6 @@ export const RecurringTransactionForm = ({
     amount,
     repeatDay,
     repeatInterval,
-    startsAt,
   }: FormValues) => {
     let amountEval: number;
 
@@ -92,11 +92,10 @@ export const RecurringTransactionForm = ({
         amount: Math.abs(amountEval),
         pubKeyHex,
         categoryId: categoryId || null,
-        startsAt: getUnixTimestamp(new Date(startsAt)),
         repeatDay,
         repeatInterval,
         deletedAt: null,
-        createdAt: recurringTransaction.createdAt,
+        createdAt: recurringTransaction.createdAt || getUnixTimestamp(),
       },
     });
   };
@@ -111,9 +110,6 @@ export const RecurringTransactionForm = ({
         amount: recurringTransaction.amount?.toString() ?? "",
         repeatDay: recurringTransaction.repeatDay,
         repeatInterval: recurringTransaction.repeatInterval,
-        startsAt: formatDateForInput(
-          getDateFromTimestamp(recurringTransaction.startsAt)
-        ),
       }}
       confirmModalProps={
         !recurringTransaction.id
@@ -141,13 +137,6 @@ export const RecurringTransactionForm = ({
             minLength={1}
           />
         </div>
-
-        <Input
-          name="startsAt"
-          aria-label="starts at"
-          type="datetime-local"
-          disabled={!!recurringTransaction.id}
-        />
 
         <div role="group">
           <div className={styles["margin-right"]}>

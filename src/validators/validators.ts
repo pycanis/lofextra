@@ -36,7 +36,6 @@ export const recurringTransactionSchema = z.object({
   currency: z.string(),
   pubKeyHex: z.string(),
   categoryId: z.string().nullable(),
-  startsAt: z.number(),
   repeatDay: z
     .number()
     .gte(1, "Must be 1 of greater")
