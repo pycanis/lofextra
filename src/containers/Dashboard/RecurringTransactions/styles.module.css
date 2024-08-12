@@ -1,19 +1,37 @@
-.scroll {
-  overflow-y: scroll;
+.margin-right {
+  margin-right: 1rem;
 }
 
-.category-row {
+.transaction-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
   padding: 0.5rem;
   border-radius: 5px;
 }
 
-.category-row:hover {
+.transaction-row:hover {
   background: var(--pico-text-selection-color);
   cursor: pointer;
   transition: 0.3s;
+}
+
+.transaction-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.margin-bottom {
+  margin-bottom: 0.2rem;
+}
+
+.small {
+  font-size: 0.7rem;
+}
+
+.large {
+  font-size: 1.5rem;
 }
 
 .flex {
@@ -25,6 +43,10 @@
   gap: 1rem;
 }
 
+.scroll {
+  overflow-y: scroll;
+}
+
 .overview {
   display: flex;
   justify-content: space-between;
@@ -32,17 +54,8 @@
   margin-bottom: 2rem;
 }
 
-.large {
-  font-size: 1.5rem;
-}
-
-.small {
-  font-size: 0.7rem;
-  margin-bottom: 0.5rem;
-}
-
-.dnd {
-  margin-right: 0.5rem;
+.delete {
+  cursor: pointer;
 }
 
 .detail-header {
@@ -56,6 +69,6 @@
   margin-bottom: 0;
 }
 
-.delete {
-  cursor: pointer;
+.header-margin-bottom {
+  margin-bottom: 1rem;
 }
