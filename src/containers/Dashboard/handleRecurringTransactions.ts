@@ -32,7 +32,7 @@ export const handleRecurringTransactions = async (
       recurringTransactionIndexData[0]?.maxRecurringTransactionIndex ?? 0;
 
     const now = getUnixTimestamp();
-    const startsAt = new Date(createdAt);
+    const startsAt = new Date(new Date(createdAt).setHours(8, 0, 0, 0));
 
     let index = 0;
 
