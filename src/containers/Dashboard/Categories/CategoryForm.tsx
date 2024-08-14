@@ -66,7 +66,7 @@ export const CategoryForm = ({ category, onSuccess, onCancel }: Props) => {
       }}
     >
       <fieldset>
-        <Input name="title" placeholder="title" aria-label="title" />
+        <Input name="title" placeholder="title" aria-label="title" autoFocus />
       </fieldset>
 
       <div className={styles["flex-container"]}>

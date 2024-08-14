@@ -31,7 +31,7 @@ type Props = {
 };
 
 const schema = z.object({
-  title: z.string().min(1),
+  title: z.string(),
   amount: z.string(),
   categoryId: z.string().nullable(),
   currency: z.string(),
@@ -122,7 +122,7 @@ export const RecurringTransactionForm = ({
       }
     >
       <fieldset>
-        <Input name="title" placeholder="title" aria-label="title" />
+        <Input name="title" placeholder="title" aria-label="title" autoFocus />
 
         <CategoryPicker name="categoryId" />
 

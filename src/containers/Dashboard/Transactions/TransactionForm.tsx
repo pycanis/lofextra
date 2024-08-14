@@ -34,7 +34,7 @@ type Props = {
 };
 
 const schema = z.object({
-  title: z.string().min(1),
+  title: z.string(),
   amount: z.string(),
   categoryId: z.string().nullable(),
   createdAt: z.string(),
@@ -131,7 +131,7 @@ export const TransactionForm = ({
       }}
     >
       <fieldset>
-        <Input name="title" placeholder="title" aria-label="title" />
+        <Input name="title" placeholder="title" aria-label="title" autoFocus />
 
         <div role="group">
           <div className={`${styles["margin-right"]} ${styles.flex}`}>

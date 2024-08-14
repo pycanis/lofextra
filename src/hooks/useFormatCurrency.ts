@@ -5,9 +5,12 @@ export const useFormatCurrency = () => {
   const { baseCurrency } = useConfigContext();
 
   const formatCurrency = useCallback((num: number, currency?: string) => {
+    const curr = currency || baseCurrency;
+
     const formatter = new Intl.NumberFormat(navigator.language, {
-      currency: currency || baseCurrency,
+      currency: curr,
       style: "currency",
+      minimumFractionDigits: curr === "BTC" ? 8 : undefined,
     });
 
     return formatter.format(num);
