@@ -2,6 +2,7 @@ import { DatabaseMutationOperation, useLofikMutation } from "@lofik/react";
 import { useState } from "react";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
+import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 type Props = {
@@ -29,14 +30,14 @@ export const RecurringTransactionDelete = ({
   const handleDelete = (shouldDeleteRelated: boolean) => {
     mutate({
       operation: DatabaseMutationOperation.Delete,
-      tableName: "recurringTransactions",
+      tableName: TableNames.RECURRING_TRANSACTIONS,
       identifierValue: recurringTransactionId,
     });
 
     if (shouldDeleteRelated) {
       mutate({
         operation: DatabaseMutationOperation.Delete,
-        tableName: "transactions",
+        tableName: TableNames.TRANSACTIONS,
         identifierColumn: "recurringTransactionId",
         identifierValue: recurringTransactionId,
       });

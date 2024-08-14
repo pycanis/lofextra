@@ -8,4 +8,14 @@ export enum QueryKeys {
   GET_TRANSACTION = "GET_TRANSACTION",
   GET_RECURRING_TRANSACTIONS = "GET_RECURRING_TRANSACTIONS",
   GET_RECURRING_TRANSACTION = "GET_RECURRING_TRANSACTION",
+  GET_CONFIG = "GET_CONFIG",
+  GET_CURRENCIES = "GET_CURRENCIES",
+}
+
+export enum TableNames {
+  TRANSACTIONS = "transactions",
+  RECURRING_TRANSACTIONS = "recurringTransactions",
+  CATEGORIES = "categories",
+  CURRENCIES = "currencies",
+  CONFIGS = "configs",
 }

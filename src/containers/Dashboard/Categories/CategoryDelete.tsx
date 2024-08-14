@@ -2,6 +2,7 @@ import { DatabaseMutationOperation, useLofikMutation } from "@lofik/react";
 import { useState } from "react";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
+import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 type Props = {
@@ -25,7 +26,7 @@ export const CategoryDelete = ({ categoryId, onSuccess }: Props) => {
   const handleDelete = () =>
     mutate({
       operation: DatabaseMutationOperation.Delete,
-      tableName: "categories",
+      tableName: TableNames.CATEGORIES,
       identifierValue: categoryId,
     });
 

@@ -9,6 +9,7 @@ import { type TypeOf, z } from "zod";
 import { Form } from "../../../components/Form";
 import { Input } from "../../../components/Input";
 import { type Category as CategoryType } from "../../../validators/types";
+import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 export type ModalCategory = Omit<
@@ -43,7 +44,7 @@ export const CategoryForm = ({ category, onSuccess, onCancel }: Props) => {
 
     mutate({
       operation: DatabaseMutationOperation.Upsert,
-      tableName: "categories",
+      tableName: TableNames.CATEGORIES,
       columnDataMap: {
         id: category.id || crypto.randomUUID(),
         title,

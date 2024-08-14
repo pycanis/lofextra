@@ -5,6 +5,7 @@ export const transactionSchema = z.object({
   id: z.string(),
   title: z.string(),
   amount: z.number(),
+  baseAmount: z.number(),
   currency: z.string(),
   pubKeyHex: z.string(),
   categoryId: z.string().nullable(),
@@ -47,3 +48,17 @@ export const recurringTransactionSchema = z.object({
 });
 
 export const recurringTransactionsSchema = z.array(recurringTransactionSchema);
+
+export const configSchema = z.object({
+  pubKeyHex: z.string(),
+  baseCurrency: z.string(),
+});
+
+export const configsSchema = z.array(configSchema);
+
+export const currencySchema = z.object({
+  code: z.string(),
+  currency: z.string(),
+});
+
+export const currenciesSchema = z.array(currencySchema);

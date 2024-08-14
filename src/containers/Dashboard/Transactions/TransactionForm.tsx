@@ -7,8 +7,10 @@ import {
 import Mexp from "math-expression-evaluator";
 import { z, type TypeOf } from "zod";
 import { CategoryPicker } from "../../../components/CategoryPicker";
+import { CurrencyPicker } from "../../../components/CurrencyPicker";
 import { Form } from "../../../components/Form";
 import { Input } from "../../../components/Input";
+import { useCurrencies } from "../../../hooks/currencies/useCurrencies";
 import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
 import {
   appendSecondsAndMilis,
@@ -17,11 +19,12 @@ import {
   getUnixTimestamp,
 } from "../../../utils/dates";
 import { type Transaction as TransactionType } from "../../../validators/types";
+import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 export type FormTransaction = Omit<
   TransactionType,
-  "id" | "amount" | "pubKeyHex" | "currency" | "updatedAt" | "deletedAt"
+  "id" | "amount" | "pubKeyHex" | "updatedAt" | "deletedAt"
 > & { id: string | null; amount: number | null };
 
 type Props = {
@@ -35,6 +38,7 @@ const schema = z.object({
   amount: z.string(),
   categoryId: z.string().nullable(),
   createdAt: z.string(),
+  currency: z.string(),
 });
 
 type FormValues = TypeOf<typeof schema>;
@@ -47,6 +51,7 @@ export const TransactionForm = ({
   onCancel,
 }: Props) => {
   const { pubKeyHex } = useLofikAccount();
+  const { getAmountInCurrency } = useCurrencies();
 
   const refetchQueries = useRefetchQueries();
   const { mutate } = useLofikMutation({
@@ -58,7 +63,13 @@ export const TransactionForm = ({
     },
   });
 
-  const onSubmit = ({ categoryId, title, amount, createdAt }: FormValues) => {
+  const onSubmit = async ({
+    categoryId,
+    title,
+    amount,
+    createdAt: createdAtValue,
+    currency,
+  }: FormValues) => {
     let amountEval: number;
 
     try {
@@ -69,19 +80,38 @@ export const TransactionForm = ({
       return;
     }
 
+    const createdAt = getUnixTimestamp(
+      new Date(appendSecondsAndMilis(transaction.createdAt, createdAtValue))
+    );
+
+    const baseAmount =
+      transaction.amount !== amountEval ||
+      transaction.currency !== currency ||
+      transaction.createdAt !== createdAt
+        ? await getAmountInCurrency({
+            amount: amountEval,
+            createdAt,
+            currency,
+          })
+        : transaction.baseAmount;
+
+    if (!baseAmount) {
+      return;
+    }
+
     mutate({
       operation: DatabaseMutationOperation.Upsert,
-      tableName: "transactions",
+      tableName: TableNames.TRANSACTIONS,
       columnDataMap: {
         id: transaction.id || crypto.randomUUID(),
         title,
         amount: Math.abs(amountEval),
         pubKeyHex,
+        currency,
+        baseAmount,
         categoryId: categoryId || null,
         deletedAt: null,
-        createdAt: getUnixTimestamp(
-          new Date(appendSecondsAndMilis(transaction.createdAt, createdAt))
-        ),
+        createdAt,
       },
     });
   };
@@ -97,24 +127,35 @@ export const TransactionForm = ({
         ),
         title: transaction.title,
         amount: transaction.amount?.toString() ?? "",
+        currency: transaction.currency,
       }}
     >
       <fieldset>
         <Input name="title" placeholder="title" aria-label="title" />
 
-        <Input name="createdAt" aria-label="date" type="datetime-local" />
-
         <div role="group">
-          <div className={styles["margin-right"]}>
+          <div className={`${styles["margin-right"]} ${styles.flex}`}>
             <CategoryPicker name="categoryId" />
           </div>
 
-          <Input
-            name="amount"
-            placeholder="5+5"
-            aria-label="amount"
-            inputMode="tel"
-          />
+          <div className={styles.flex}>
+            <Input name="createdAt" aria-label="date" type="datetime-local" />
+          </div>
+        </div>
+
+        <div role="group">
+          <div className={`${styles["margin-right"]} ${styles.flex}`}>
+            <Input
+              name="amount"
+              placeholder="5+5"
+              aria-label="amount"
+              inputMode="tel"
+            />
+          </div>
+
+          <div className={styles.flex}>
+            <CurrencyPicker name="currency" />
+          </div>
         </div>
       </fieldset>
 

@@ -4,9 +4,9 @@ import {
   type GenerateDatabaseMutation,
   type SQLocal,
 } from "@lofik/react";
-import { QueryKeys } from "../../queries";
 import { getUnixTimestamp } from "../../utils/dates";
 import type { RecurringTransaction } from "../../validators/types";
+import { QueryKeys, TableNames } from "./constants";
 
 export const handleRecurringTransactions = async (
   sqlocal: SQLocal,
@@ -49,7 +49,7 @@ export const handleRecurringTransactions = async (
       if (maxRecurringTransactionIndex < index) {
         mutations.push({
           operation: DatabaseMutationOperation.Upsert,
-          tableName: "transactions",
+          tableName: TableNames.TRANSACTIONS,
           columnDataMap: {
             id: crypto.randomUUID(),
             title,

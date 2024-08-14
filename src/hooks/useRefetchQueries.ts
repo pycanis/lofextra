@@ -1,6 +1,6 @@
 import { useLofikQueryClient } from "@lofik/react";
 import { useCallback, useMemo } from "react";
-import { QueryKeys } from "../queries";
+import { QueryKeys } from "../containers/Dashboard/constants";
 
 export const useRefetchQueries = () => {
   const queryClient = useLofikQueryClient();

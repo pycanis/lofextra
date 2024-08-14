@@ -1,10 +1,12 @@
 import { useRouter } from "@tanstack/react-router";
 import { getUnixTimestamp } from "../../../utils/dates";
+import { useConfigContext } from "../Config/ConfigContext";
 import { routes } from "../routes";
 import { TransactionForm } from "./TransactionForm";
 
 export const TransactionCreate = () => {
   const router = useRouter();
+  const { baseCurrency } = useConfigContext();
 
   const navigateToDashboard = () => router.navigate({ to: routes.DASHBOARD });
   const goBack = () => router.history.back();
@@ -19,6 +21,7 @@ export const TransactionCreate = () => {
           title: "",
           amount: null,
           categoryId: "",
+          currency: baseCurrency, // fix hard refresh wrong currency
           recurringTransactionId: null,
           recurringTransactionIndex: null,
           createdAt: getUnixTimestamp(),

@@ -8,6 +8,7 @@ import {
 } from "@lofik/react";
 import { type ChangeEvent, useRef, useState } from "react";
 import { getUnixTimestamp } from "../../../utils/dates";
+import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 export const Recovery = () => {
@@ -45,7 +46,7 @@ export const Recovery = () => {
     const categoriesMutations: GenerateDatabaseMutation[] = categories.map(
       (category) => ({
         operation: DatabaseMutationOperation.Upsert,
-        tableName: "categories",
+        tableName: TableNames.CATEGORIES,
         columnDataMap: {
           ...category,
           updatedAt: getUnixTimestamp(),
@@ -60,7 +61,7 @@ export const Recovery = () => {
     const recurringTransactionsMutations: GenerateDatabaseMutation[] =
       recurringTransactions.map((recurringTransaction) => ({
         operation: DatabaseMutationOperation.Upsert,
-        tableName: "recurringTransactions",
+        tableName: TableNames.RECURRING_TRANSACTIONS,
         columnDataMap: {
           ...recurringTransaction,
           updatedAt: getUnixTimestamp(),
@@ -74,7 +75,7 @@ export const Recovery = () => {
     const transactionsMutations: GenerateDatabaseMutation[] = transactions.map(
       (transaction) => ({
         operation: DatabaseMutationOperation.Upsert,
-        tableName: "transactions",
+        tableName: TableNames.TRANSACTIONS,
         columnDataMap: {
           ...transaction,
           updatedAt: getUnixTimestamp(),

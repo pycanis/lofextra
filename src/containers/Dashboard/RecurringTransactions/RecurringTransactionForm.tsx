@@ -7,6 +7,7 @@ import {
 import Mexp from "math-expression-evaluator";
 import { z, type TypeOf } from "zod";
 import { CategoryPicker } from "../../../components/CategoryPicker";
+import { CurrencyPicker } from "../../../components/CurrencyPicker";
 import { Form } from "../../../components/Form";
 import { Input } from "../../../components/Input";
 import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
@@ -15,17 +16,12 @@ import {
   RecurringTransactionRepeatInterval,
   type RecurringTransaction,
 } from "../../../validators/types";
+import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 export type FormRecurringTransaction = Omit<
   RecurringTransaction,
-  | "id"
-  | "amount"
-  | "pubKeyHex"
-  | "currency"
-  | "updatedAt"
-  | "deletedAt"
-  | "createdAt"
+  "id" | "amount" | "pubKeyHex" | "updatedAt" | "deletedAt" | "createdAt"
 > & { id: string | null; amount: number | null; createdAt: number | null };
 
 type Props = {
@@ -38,6 +34,7 @@ const schema = z.object({
   title: z.string().min(1),
   amount: z.string(),
   categoryId: z.string().nullable(),
+  currency: z.string(),
   repeatDay: z
     .number()
     .gte(1, "Must be 1 of greater")
@@ -72,6 +69,7 @@ export const RecurringTransactionForm = ({
     amount,
     repeatDay,
     repeatInterval,
+    currency,
   }: FormValues) => {
     let amountEval: number;
 
@@ -85,13 +83,14 @@ export const RecurringTransactionForm = ({
 
     mutate({
       operation: DatabaseMutationOperation.Upsert,
-      tableName: "recurringTransactions",
+      tableName: TableNames.RECURRING_TRANSACTIONS,
       columnDataMap: {
         id: recurringTransaction.id || crypto.randomUUID(),
         title,
         amount: Math.abs(amountEval),
         pubKeyHex,
         categoryId: categoryId || null,
+        currency,
         repeatDay,
         repeatInterval,
         deletedAt: null,
@@ -110,13 +109,14 @@ export const RecurringTransactionForm = ({
         amount: recurringTransaction.amount?.toString() ?? "",
         repeatDay: recurringTransaction.repeatDay,
         repeatInterval: recurringTransaction.repeatInterval,
+        currency: recurringTransaction.currency,
       }}
       confirmModalProps={
         !recurringTransaction.id
           ? {
               enabled: true,
               children:
-                "You'll only be able to update title, amount and category after creating.",
+                "You won't be able to change repeat day and interval after creating.",
             }
           : undefined
       }
@@ -124,18 +124,22 @@ export const RecurringTransactionForm = ({
       <fieldset>
         <Input name="title" placeholder="title" aria-label="title" />
 
+        <CategoryPicker name="categoryId" />
+
         <div role="group">
-          <div className={styles["margin-right"]}>
-            <CategoryPicker name="categoryId" />
+          <div className={`${styles["margin-right"]} ${styles.flex}`}>
+            <Input
+              name="amount"
+              placeholder="5+5"
+              aria-label="amount"
+              inputMode="tel"
+              minLength={1}
+            />
           </div>
 
-          <Input
-            name="amount"
-            placeholder="5+5"
-            aria-label="amount"
-            inputMode="tel"
-            minLength={1}
-          />
+          <div className={styles.flex}>
+            <CurrencyPicker name="currency" />
+          </div>
         </div>
 
         <div role="group">
