@@ -24,8 +24,8 @@ import styles from "./styles.module.css";
 
 export type FormTransaction = Omit<
   TransactionType,
-  "id" | "amount" | "pubKeyHex" | "updatedAt" | "deletedAt"
-> & { id: string | null; amount: number | null };
+  "id" | "amount" | "baseAmount" | "pubKeyHex" | "updatedAt" | "deletedAt"
+> & { id: string | null; amount: number | null; baseAmount: number | null };
 
 type Props = {
   transaction: FormTransaction;

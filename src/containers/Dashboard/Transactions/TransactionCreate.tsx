@@ -20,8 +20,9 @@ export const TransactionCreate = () => {
           id: null,
           title: "",
           amount: null,
+          baseAmount: null,
           categoryId: "",
-          currency: baseCurrency, // fix hard refresh wrong currency
+          currency: baseCurrency,
           recurringTransactionId: null,
           recurringTransactionIndex: null,
           createdAt: getUnixTimestamp(),
