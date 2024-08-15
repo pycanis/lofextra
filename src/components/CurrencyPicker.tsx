@@ -1,7 +1,4 @@
-import { useLofikQuery } from "@lofik/react";
-import { useMemo } from "react";
-import { QueryKeys } from "../containers/Dashboard/constants";
-import { currenciesSchema } from "../validators/validators";
+import { Currencies } from "../containers/Dashboard/constants";
 import { Select } from "./Select";
 
 type Props = {
@@ -12,22 +9,12 @@ type Props = {
   HTMLSelectElement
 >;
 
+const options = Object.keys(Currencies).map((code) => ({
+  label: `${code} - ${Currencies[code as keyof typeof Currencies]}`,
+  value: code,
+}));
+
 export const CurrencyPicker = ({ name, label, ...props }: Props) => {
-  const { data } = useLofikQuery({
-    sql: `SELECT * FROM currencies ORDER BY sortOrder`,
-    schema: currenciesSchema,
-    queryKey: [QueryKeys.GET_CURRENCIES],
-  });
-
-  const options = useMemo(
-    () =>
-      data?.map(({ code, currency }) => ({
-        label: `${code} - ${currency}`,
-        value: code,
-      })),
-    [data]
-  );
-
   return (
     <Select
       name={name}

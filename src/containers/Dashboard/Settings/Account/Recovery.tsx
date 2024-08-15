@@ -7,9 +7,9 @@ import {
   useLofikMutation,
 } from "@lofik/react";
 import { type ChangeEvent, useRef, useState } from "react";
-import { getUnixTimestamp } from "../../../utils/dates";
-import { TableNames } from "../constants";
-import styles from "./styles.module.css";
+import { getUnixTimestamp } from "../../../../utils/dates";
+import { TableNames } from "../../constants";
+import styles from "../styles.module.css";
 
 export const Recovery = () => {
   const [isServerSyncing, setIsServerSyncing] = useState(false);
@@ -94,7 +94,6 @@ export const Recovery = () => {
 
   return (
     <div>
-      <h3>recovery</h3>
       <p>download all your data in a single database file</p>
       <button onClick={() => exportDatabase("lofextra.sqlite3")}>export</button>
 

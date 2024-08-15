@@ -52,13 +52,11 @@ export const recurringTransactionsSchema = z.array(recurringTransactionSchema);
 export const configSchema = z.object({
   pubKeyHex: z.string(),
   baseCurrency: z.string(),
+  showSats: z.number(), // treated as boolean (sqlite)
+  inputSats: z.number(), // treated as boolean (sqlite)
+  updatedAt: z.number(),
+  deletedAt: z.number().nullable(),
+  createdAt: z.number(),
 });
 
 export const configsSchema = z.array(configSchema);
-
-export const currencySchema = z.object({
-  code: z.string(),
-  currency: z.string(),
-});
-
-export const currenciesSchema = z.array(currencySchema);

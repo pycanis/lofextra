@@ -9,7 +9,6 @@ export enum QueryKeys {
   GET_RECURRING_TRANSACTIONS = "GET_RECURRING_TRANSACTIONS",
   GET_RECURRING_TRANSACTION = "GET_RECURRING_TRANSACTION",
   GET_CONFIG = "GET_CONFIG",
-  GET_CURRENCIES = "GET_CURRENCIES",
 }
 
 export enum TableNames {
@@ -18,4 +17,40 @@ export enum TableNames {
   CATEGORIES = "categories",
   CURRENCIES = "currencies",
   CONFIGS = "configs",
+}
+
+export enum Currencies {
+  CZK = "Czech Koruna",
+  EUR = "Euro",
+  USD = "United States Dollar",
+  BTC = "Bitcoin",
+  PLN = "Polish Zloty",
+  GBP = "British Pound Sterling",
+  CHF = "Swiss Franc",
+  AUD = "Australian Dollar",
+  BRL = "Brazilian Real",
+  BGN = "Bulgarian Lev",
+  CNY = "Chinese Renminbi",
+  DKK = "Danish Krone",
+  PHP = "Philippine Peso",
+  HKD = "Hong Kong Dollar",
+  INR = "Indian Rupee",
+  IDR = "Indonesian Rupiah",
+  ISK = "Icelandic Króna",
+  ILS = "Israeli New Shekel",
+  JPY = "Japanese Yen",
+  ZAR = "South African Rand",
+  CAD = "Canadian Dollar",
+  KRW = "South Korean Won",
+  HUF = "Hungarian Forint",
+  MYR = "Malaysian Ringgit",
+  MXN = "Mexican Peso",
+  XDR = "IMF Special Drawing Rights",
+  NOK = "Norwegian Krone",
+  NZD = "New Zealand Dollar",
+  RON = "Romanian Leu",
+  SGD = "Singapore Dollar",
+  SEK = "Swedish Krona",
+  THB = "Thai Baht",
+  TRY = "Turkish Lira",
 }

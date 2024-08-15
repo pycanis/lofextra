@@ -10,12 +10,13 @@ import { CategoryPicker } from "../../../components/CategoryPicker";
 import { CurrencyPicker } from "../../../components/CurrencyPicker";
 import { Form } from "../../../components/Form";
 import { Input } from "../../../components/Input";
-import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
+import { SatsCheckbox } from "../../../components/SatsCheckbox";
 import { getUnixTimestamp } from "../../../utils/dates";
 import {
   RecurringTransactionRepeatInterval,
   type RecurringTransaction,
 } from "../../../validators/types";
+import { useConfigContext } from "../Config/ConfigContext";
 import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
@@ -40,6 +41,7 @@ const schema = z.object({
     .gte(1, "Must be 1 of greater")
     .lte(28, "Must be 28 or lower"),
   repeatInterval: z.nativeEnum(RecurringTransactionRepeatInterval),
+  inputSats: z.boolean().optional(),
 });
 
 type FormValues = TypeOf<typeof schema>;
@@ -52,15 +54,11 @@ export const RecurringTransactionForm = ({
   onCancel,
 }: Props) => {
   const { pubKeyHex } = useLofikAccount();
+  const { inputSats } = useConfigContext();
 
-  const refetchQueries = useRefetchQueries();
   const { mutate } = useLofikMutation({
     shouldSync: true,
-    onSuccess: () => {
-      refetchQueries();
-
-      onSuccess?.();
-    },
+    onSuccess,
   });
 
   const onSubmit = ({
@@ -70,6 +68,7 @@ export const RecurringTransactionForm = ({
     repeatDay,
     repeatInterval,
     currency,
+    inputSats,
   }: FormValues) => {
     let amountEval: number;
 
@@ -81,13 +80,17 @@ export const RecurringTransactionForm = ({
       return;
     }
 
+    const adjustedAmount = Math.abs(
+      currency === "BTC" && inputSats ? amountEval / 100000000 : amountEval
+    );
+
     mutate({
       operation: DatabaseMutationOperation.Upsert,
       tableName: TableNames.RECURRING_TRANSACTIONS,
       columnDataMap: {
         id: recurringTransaction.id || crypto.randomUUID(),
         title,
-        amount: Math.abs(amountEval),
+        amount: adjustedAmount,
         pubKeyHex,
         categoryId: categoryId || null,
         currency,
@@ -110,6 +113,7 @@ export const RecurringTransactionForm = ({
         repeatDay: recurringTransaction.repeatDay,
         repeatInterval: recurringTransaction.repeatInterval,
         currency: recurringTransaction.currency,
+        inputSats: !!inputSats,
       }}
       confirmModalProps={
         !recurringTransaction.id
@@ -140,6 +144,8 @@ export const RecurringTransactionForm = ({
           <div className={styles.flex}>
             <CurrencyPicker name="currency" />
           </div>
+
+          <SatsCheckbox />
         </div>
 
         <div role="group">

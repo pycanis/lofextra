@@ -1,7 +1,7 @@
 import { DatabaseMutationOperation, useLofikMutation } from "@lofik/react";
 import { useState } from "react";
 import { ConfirmModal } from "../../../components/ConfirmModal";
-import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
+import { refetchQueries } from "../../../utils/refetchQueries";
 import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
@@ -16,7 +16,6 @@ export const RecurringTransactionDelete = ({
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmDeleteRelated, setConfirmDeleteRelated] = useState(false);
-  const refetchQueries = useRefetchQueries();
 
   const { mutate } = useLofikMutation({
     shouldSync: true,

@@ -10,7 +10,6 @@ import {
   ScrollRestoration,
   useLocation,
 } from "@tanstack/react-router";
-import { Account } from "./Account/Account";
 import { Categories } from "./Categories/Categories";
 import { CategoryCreate } from "./Categories/CategoryCreate";
 import { CategoryDetail } from "./Categories/CategoryDetail";
@@ -22,6 +21,7 @@ import { RecurringTransactionCreate } from "./RecurringTransactions/RecurringTra
 import { RecurringTransactionDetail } from "./RecurringTransactions/RecurringTransactionDetail";
 import { RecurringTransactions } from "./RecurringTransactions/RecurringTransactions";
 import { routes } from "./routes";
+import { Settings } from "./Settings/Settings";
 import { Statistics } from "./Statistics/Statistics";
 import styles from "./styles.module.css";
 import { TransactionCreate } from "./Transactions/TransactionCreate";
@@ -60,12 +60,12 @@ const SubMenuLinks = () => {
 
       <li>
         <Link
-          to={routes.ACCOUNT}
+          to={routes.SETTINGS}
           className={
-            location.pathname === routes.ACCOUNT ? "contrast" : "primary"
+            location.pathname === routes.SETTINGS ? "contrast" : "primary"
           }
         >
-          account
+          settings
         </Link>
       </li>
     </>
@@ -171,10 +171,10 @@ const categoriesRoute = createRoute({
   component: Categories,
 });
 
-const accountRoute = createRoute({
+const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: routes.ACCOUNT,
-  component: Account,
+  path: routes.SETTINGS,
+  component: Settings,
 });
 
 const transactionDetailRoute = createRoute({
@@ -225,7 +225,7 @@ const routeTree = rootRoute.addChildren([
   categoriesRoute,
   categoryDetailRoute,
   categoryCreateRoute,
-  accountRoute,
+  settingsRoute,
   transactionDetailRoute,
   transactionCreateRoute,
   recurringTransactionsRoute,

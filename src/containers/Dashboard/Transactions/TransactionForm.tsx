@@ -10,15 +10,17 @@ import { CategoryPicker } from "../../../components/CategoryPicker";
 import { CurrencyPicker } from "../../../components/CurrencyPicker";
 import { Form } from "../../../components/Form";
 import { Input } from "../../../components/Input";
+import { SatsCheckbox } from "../../../components/SatsCheckbox";
 import { useCurrencies } from "../../../hooks/currencies/useCurrencies";
-import { useRefetchQueries } from "../../../hooks/useRefetchQueries";
 import {
   appendSecondsAndMilis,
   formatDateForInput,
   getDateFromTimestamp,
   getUnixTimestamp,
 } from "../../../utils/dates";
+import { refetchQueries } from "../../../utils/refetchQueries";
 import { type Transaction as TransactionType } from "../../../validators/types";
+import { useConfigContext } from "../Config/ConfigContext";
 import { TableNames } from "../constants";
 import styles from "./styles.module.css";
 
@@ -39,6 +41,7 @@ const schema = z.object({
   categoryId: z.string().nullable(),
   createdAt: z.string(),
   currency: z.string(),
+  inputSats: z.boolean().optional(),
 });
 
 type FormValues = TypeOf<typeof schema>;
@@ -52,8 +55,8 @@ export const TransactionForm = ({
 }: Props) => {
   const { pubKeyHex } = useLofikAccount();
   const { getAmountInCurrency } = useCurrencies();
+  const { inputSats } = useConfigContext();
 
-  const refetchQueries = useRefetchQueries();
   const { mutate } = useLofikMutation({
     shouldSync: true,
     onSuccess: () => {
@@ -69,6 +72,7 @@ export const TransactionForm = ({
     amount,
     createdAt: createdAtValue,
     currency,
+    inputSats,
   }: FormValues) => {
     let amountEval: number;
 
@@ -84,12 +88,16 @@ export const TransactionForm = ({
       new Date(appendSecondsAndMilis(transaction.createdAt, createdAtValue))
     );
 
+    const adjustedAmount = Math.abs(
+      currency === "BTC" && inputSats ? amountEval / 100000000 : amountEval
+    );
+
     const baseAmount =
-      transaction.amount !== amountEval ||
+      transaction.amount !== adjustedAmount ||
       transaction.currency !== currency ||
       transaction.createdAt !== createdAt
         ? await getAmountInCurrency({
-            amount: amountEval,
+            amount: adjustedAmount,
             createdAt,
             currency,
           })
@@ -105,7 +113,7 @@ export const TransactionForm = ({
       columnDataMap: {
         id: transaction.id || crypto.randomUUID(),
         title,
-        amount: Math.abs(amountEval),
+        amount: adjustedAmount,
         pubKeyHex,
         currency,
         baseAmount,
@@ -128,6 +136,7 @@ export const TransactionForm = ({
         title: transaction.title,
         amount: transaction.amount?.toString() ?? "",
         currency: transaction.currency,
+        inputSats: !!inputSats,
       }}
     >
       <fieldset>
@@ -156,6 +165,8 @@ export const TransactionForm = ({
           <div className={styles.flex}>
             <CurrencyPicker name="currency" />
           </div>
+
+          <SatsCheckbox />
         </div>
       </fieldset>
 
