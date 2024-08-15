@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useConfigContext } from "../containers/Dashboard/Config/ConfigContext";
+import { SATS_IN_BTC } from "../containers/Dashboard/constants";
 
 export const useFormatCurrency = () => {
   const { baseCurrency, showSats } = useConfigContext();
@@ -19,7 +20,7 @@ export const useFormatCurrency = () => {
     return `${
       isBtc
         ? showSats
-          ? formatter.format(num * 100000000) + " sats"
+          ? formatter.format(num * SATS_IN_BTC) + " sats"
           : `₿${formatter.format(num)}`
         : formatter.format(num)
     }`;

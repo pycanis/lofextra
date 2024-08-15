@@ -23,7 +23,7 @@ export const CategoryDetail = () => {
         AND id = '${params.id}'
       `,
     schema: categoriesSchema,
-    queryKey: [QueryKeys.GET_CATEGORY, pubKeyHex],
+    queryKey: [QueryKeys.GET_CATEGORY, pubKeyHex, params.id],
     enabled: !!params.id,
   });
 

@@ -6,6 +6,7 @@ import {
 } from "@lofik/react";
 import Mexp from "math-expression-evaluator";
 import { z, type TypeOf } from "zod";
+import { AmountInput } from "../../../components/AmountInput";
 import { CategoryPicker } from "../../../components/CategoryPicker";
 import { CurrencyPicker } from "../../../components/CurrencyPicker";
 import { Form } from "../../../components/Form";
@@ -17,7 +18,7 @@ import {
   type RecurringTransaction,
 } from "../../../validators/types";
 import { useConfigContext } from "../Config/ConfigContext";
-import { TableNames } from "../constants";
+import { SATS_IN_BTC, TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 export type FormRecurringTransaction = Omit<
@@ -81,7 +82,7 @@ export const RecurringTransactionForm = ({
     }
 
     const adjustedAmount = Math.abs(
-      currency === "BTC" && inputSats ? amountEval / 100000000 : amountEval
+      currency === "BTC" && inputSats ? amountEval / SATS_IN_BTC : amountEval
     );
 
     mutate({
@@ -106,10 +107,16 @@ export const RecurringTransactionForm = ({
     <Form<FormValues>
       onSubmit={onSubmit}
       resolver={zodResolver(schema)}
-      values={{
+      defaultValues={{
         categoryId: recurringTransaction.categoryId,
         title: recurringTransaction.title,
-        amount: recurringTransaction.amount?.toString() ?? "",
+        amount:
+          (recurringTransaction.currency === "BTC" &&
+          !inputSats &&
+          !!recurringTransaction.amount
+            ? recurringTransaction.amount * SATS_IN_BTC
+            : recurringTransaction.amount
+          )?.toString() ?? "",
         repeatDay: recurringTransaction.repeatDay,
         repeatInterval: recurringTransaction.repeatInterval,
         currency: recurringTransaction.currency,
@@ -126,19 +133,18 @@ export const RecurringTransactionForm = ({
       }
     >
       <fieldset>
-        <Input name="title" placeholder="title" aria-label="title" autoFocus />
+        <Input
+          name="title"
+          placeholder="title"
+          aria-label="title"
+          autoFocus={!recurringTransaction.title}
+        />
 
         <CategoryPicker name="categoryId" />
 
         <div role="group">
           <div className={`${styles["margin-right"]} ${styles.flex}`}>
-            <Input
-              name="amount"
-              placeholder="5+5"
-              aria-label="amount"
-              inputMode="tel"
-              minLength={1}
-            />
+            <AmountInput />
           </div>
 
           <div className={styles.flex}>

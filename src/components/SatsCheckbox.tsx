@@ -1,7 +1,11 @@
-import { DatabaseMutationOperation, useLofikMutation } from "@lofik/react";
+import {
+  DatabaseMutationOperation,
+  queryClient,
+  useLofikMutation,
+} from "@lofik/react";
 import { useFormContext } from "react-hook-form";
 import { useConfigContext } from "../containers/Dashboard/Config/ConfigContext";
-import { TableNames } from "../containers/Dashboard/constants";
+import { QueryKeys, TableNames } from "../containers/Dashboard/constants";
 import { useSkipFirstRenderEffect } from "../hooks/useSkipFirstRenderEffect";
 import { Checkbox } from "./Checkbox";
 import styles from "./styles.module.css";
@@ -12,7 +16,14 @@ const SatsCheckboxInner = () => {
 
   const inputSats = watch("inputSats");
 
-  const { mutate } = useLofikMutation({ shouldSync: false });
+  const { mutate } = useLofikMutation({
+    shouldSync: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.GET_CONFIG, config.pubKeyHex],
+      });
+    },
+  });
 
   useSkipFirstRenderEffect(() => {
     mutate({

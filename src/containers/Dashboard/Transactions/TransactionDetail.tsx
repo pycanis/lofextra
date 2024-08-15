@@ -22,7 +22,7 @@ export const TransactionDetail = () => {
         AND id = '${params.id}'
       `,
     schema: transactionsSchema,
-    queryKey: [QueryKeys.GET_TRANSACTION, pubKeyHex],
+    queryKey: [QueryKeys.GET_TRANSACTION, pubKeyHex, params.id],
     enabled: !!params.id,
   });
 

@@ -99,7 +99,7 @@ export const ConfigModalForm = () => {
       <Form<FormValues>
         onSubmit={handleSubmit}
         resolver={zodResolver(schema)}
-        values={{
+        defaultValues={{
           baseCurrency: "CZK",
         }}
         confirmModalProps={{

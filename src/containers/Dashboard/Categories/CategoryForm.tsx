@@ -61,12 +61,17 @@ export const CategoryForm = ({ category, onSuccess, onCancel }: Props) => {
     <Form<FormValues>
       onSubmit={onSubmit}
       resolver={zodResolver(schema)}
-      values={{
+      defaultValues={{
         title: category.title,
       }}
     >
       <fieldset>
-        <Input name="title" placeholder="title" aria-label="title" autoFocus />
+        <Input
+          name="title"
+          placeholder="title"
+          aria-label="title"
+          autoFocus={!category.title}
+        />
       </fieldset>
 
       <div className={styles["flex-container"]}>

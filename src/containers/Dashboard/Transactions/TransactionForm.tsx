@@ -6,6 +6,7 @@ import {
 } from "@lofik/react";
 import Mexp from "math-expression-evaluator";
 import { z, type TypeOf } from "zod";
+import { AmountInput } from "../../../components/AmountInput";
 import { CategoryPicker } from "../../../components/CategoryPicker";
 import { CurrencyPicker } from "../../../components/CurrencyPicker";
 import { Form } from "../../../components/Form";
@@ -21,7 +22,7 @@ import {
 import { refetchQueries } from "../../../utils/refetchQueries";
 import { type Transaction as TransactionType } from "../../../validators/types";
 import { useConfigContext } from "../Config/ConfigContext";
-import { TableNames } from "../constants";
+import { SATS_IN_BTC, TableNames } from "../constants";
 import styles from "./styles.module.css";
 
 export type FormTransaction = Omit<
@@ -89,7 +90,7 @@ export const TransactionForm = ({
     );
 
     const adjustedAmount = Math.abs(
-      currency === "BTC" && inputSats ? amountEval / 100000000 : amountEval
+      currency === "BTC" && inputSats ? amountEval / SATS_IN_BTC : amountEval
     );
 
     const baseAmount =
@@ -128,19 +129,28 @@ export const TransactionForm = ({
     <Form<FormValues>
       onSubmit={onSubmit}
       resolver={zodResolver(schema)}
-      values={{
+      defaultValues={{
         categoryId: transaction.categoryId,
         createdAt: formatDateForInput(
           getDateFromTimestamp(transaction.createdAt)
         ),
         title: transaction.title,
-        amount: transaction.amount?.toString() ?? "",
+        amount:
+          (transaction.currency === "BTC" && !inputSats && !!transaction.amount
+            ? transaction.amount * SATS_IN_BTC
+            : transaction.amount
+          )?.toString() ?? "",
         currency: transaction.currency,
         inputSats: !!inputSats,
       }}
     >
       <fieldset>
-        <Input name="title" placeholder="title" aria-label="title" autoFocus />
+        <Input
+          name="title"
+          placeholder="title"
+          aria-label="title"
+          autoFocus={!transaction.title}
+        />
 
         <div role="group">
           <div className={`${styles["margin-right"]} ${styles.flex}`}>
@@ -154,12 +164,7 @@ export const TransactionForm = ({
 
         <div role="group">
           <div className={`${styles["margin-right"]} ${styles.flex}`}>
-            <Input
-              name="amount"
-              placeholder="5+5"
-              aria-label="amount"
-              inputMode="tel"
-            />
+            <AmountInput />
           </div>
 
           <div className={styles.flex}>

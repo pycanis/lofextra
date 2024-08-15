@@ -1,13 +1,13 @@
 import {
   DatabaseMutationOperation,
-  queryClient,
   type GenerateDatabaseMutation,
   type SQLocal,
 } from "@lofik/react";
 import { getAmountInCurrency } from "../../utils/currencies/currencies";
 import { getUnixTimestamp } from "../../utils/dates";
+import { refetchQueries } from "../../utils/refetchQueries";
 import type { RecurringTransaction } from "../../validators/types";
-import { QueryKeys, TableNames } from "./constants";
+import { TableNames } from "./constants";
 
 export const handleRecurringTransactions = async (
   sqlocal: SQLocal,
@@ -96,10 +96,6 @@ export const handleRecurringTransactions = async (
 
   return {
     mutations,
-    onSuccess: () => {
-      for (const queryKey of Object.keys(QueryKeys)) {
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
-      }
-    },
+    onSuccess: refetchQueries,
   };
 };

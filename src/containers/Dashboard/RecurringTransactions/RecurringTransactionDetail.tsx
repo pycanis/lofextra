@@ -23,7 +23,7 @@ export const RecurringTransactionDetail = () => {
         AND id = '${params.id}'
       `,
     schema: recurringTransactionsSchema,
-    queryKey: [QueryKeys.GET_RECURRING_TRANSACTION, pubKeyHex],
+    queryKey: [QueryKeys.GET_RECURRING_TRANSACTION, pubKeyHex, params.id],
     enabled: !!params.id,
   });
 

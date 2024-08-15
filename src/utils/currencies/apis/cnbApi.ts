@@ -14,33 +14,37 @@ export const getCnbBaseCurrencyExchangeRate = async (
       )}`
     );
 
-  const response = await fetch(url);
+  try {
+    const response = await fetch(url);
 
-  if (!response.ok) {
-    return;
+    if (!response.ok) {
+      return;
+    }
+
+    const exchangeRatesData = await response.text();
+
+    const exchangeRates = parseResponse(exchangeRatesData);
+
+    if (baseCurrency === "CZK" || currency === "CZK") {
+      const exchangeRate =
+        baseCurrency === "CZK"
+          ? exchangeRates[currency].rate / exchangeRates[currency].unit
+          : exchangeRates[baseCurrency].rate / exchangeRates[baseCurrency].unit;
+
+      return baseCurrency === "CZK" ? exchangeRate : 1 / exchangeRate;
+    }
+
+    const { rate: baseCurrencyRate, unit: baseCurrencyUnit } =
+      exchangeRates[baseCurrency];
+    const { rate: currencyRate, unit: currencyUnit } = exchangeRates[currency];
+
+    const adjustedBaseCurrencyRate = baseCurrencyRate / baseCurrencyUnit;
+    const adjustedCurrencyRate = currencyRate / currencyUnit;
+
+    return adjustedCurrencyRate / adjustedBaseCurrencyRate;
+  } catch (err) {
+    console.error(err);
   }
-
-  const exchangeRatesData = await response.text();
-
-  const exchangeRates = parseResponse(exchangeRatesData);
-
-  if (baseCurrency === "CZK" || currency === "CZK") {
-    const exchangeRate =
-      baseCurrency === "CZK"
-        ? exchangeRates[currency].rate / exchangeRates[currency].unit
-        : exchangeRates[baseCurrency].rate / exchangeRates[baseCurrency].unit;
-
-    return baseCurrency === "CZK" ? exchangeRate : 1 / exchangeRate;
-  }
-
-  const { rate: baseCurrencyRate, unit: baseCurrencyUnit } =
-    exchangeRates[baseCurrency];
-  const { rate: currencyRate, unit: currencyUnit } = exchangeRates[currency];
-
-  const adjustedBaseCurrencyRate = baseCurrencyRate / baseCurrencyUnit;
-  const adjustedCurrencyRate = currencyRate / currencyUnit;
-
-  return adjustedCurrencyRate / adjustedBaseCurrencyRate;
 };
 
 const parseResponse = (data: string) => {
