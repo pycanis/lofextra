@@ -3,30 +3,30 @@ import {
   type FieldValues,
   type RegisterOptions,
 } from "react-hook-form";
+import styles from "./styles.module.css";
 
 type Props = {
   name: string;
   options?: RegisterOptions<FieldValues, string>;
-  helperText?: string;
 } & React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 >;
 
-export const Input = ({ name, options, helperText, ...rest }: Props) => {
+export const Checkbox = ({ name, options, ...rest }: Props) => {
   const { register } = useFormContext();
 
   return (
-    <label>
-      {rest["aria-label"]}
+    <>
+      <label htmlFor={name}>{rest["aria-label"]}</label>
 
       <input
+        id={name}
+        className={styles.checkbox}
+        type="checkbox"
         {...register(name, options)}
         {...rest}
-        aria-describedby={helperText ? `${name}-helper` : undefined}
       />
-
-      {helperText && <small id={`${name}-helper`}>{helperText}</small>}
-    </label>
+    </>
   );
 };
