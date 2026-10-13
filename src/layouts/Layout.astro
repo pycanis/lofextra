@@ -46,6 +46,14 @@ const description = "local-first expense tracker";
   </head>
 
   <body>
+    <p class="notice">
+      lofextra is moving to
+      <a href="https://lofextra.unbeholden.dev">lofextra.unbeholden.dev</a>.
+      your data lives in this browser, so move it yourself: in
+      <a href="/dashboard#/settings">settings</a>, export the database, import
+      it on the new site. importing on all devices is the safest way to get your
+      data since sync is flaky with a lot of transactions. this site will be discontinued in March 27.
+    </p>
     <main>
       <slot />
     </main>
@@ -73,6 +81,10 @@ const description = "local-first expense tracker";
         height: 100vh;
         display: flex;
         flex-direction: column;
+      }
+
+      .notice {
+        margin-top: 1rem;
       }
 
       main {
